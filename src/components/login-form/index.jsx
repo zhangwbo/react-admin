@@ -1,12 +1,24 @@
 import React,{Component} from 'react';
+import PropTypes from 'prop-types';
 import {
-  Form, Icon, Input, Button
+  Form,
+  Icon,
+  Input,
+  Button,
+  message
 } from 'antd';
+
+
+
 
 const Item = Form.Item;
 
 
 class LoginForm extends Component{
+  static propTypes = {
+    login: PropTypes.func.isRequired
+  };
+
   checkPassword =(rule, value, callback)=>{
     if (!value){
       callback('必须输入密码');
@@ -21,15 +33,37 @@ class LoginForm extends Component{
     }
   };
 
+  handleSubmit= e =>{
+    e.preventDefault();
+    const {validateFields,resetFields} = this.props.form;
+    validateFields(async(error,values)=>{
+      if(!error){
+
+        console.log('收集的表单数据: ', values);
+
+        const {username,password} = values;
+
+        this.props.login(username,password);
+
+      }else{
+        resetFields(['password']);
+        const err = Object.values(error).reduce((prev,curr)=>{
+          return prev + curr.errors[0].message +' '
+        },'');
+        message.error(err);
+      }
+    })
+  };
+
   render(){
     const {getFieldDecorator} = this.props.form;
     return (
-      <Form className="login-form-container">
+      <Form className="login-form-container" onSubmit={this.handleSubmit}>
         <Item>
           {
             getFieldDecorator('username',{
               rules: [
-                { required: true, message: '请输入用户名!' },
+                {required: true, message: '请输入用户名!' },
                 {max:11,message:'用户名长度不得少于四位'},
                 {min:4,message:'用户名长度不得少于四位'},
                 {pattern:/^[a-zA-Z0-9]+$/,message:'用户名包括大小写英文字母，数字和下划线。'}
@@ -42,21 +76,16 @@ class LoginForm extends Component{
         <Item>
           {
             getFieldDecorator('password',{
-              rules: [
-                'password',
-                {
-                  rules:[
-                    {validator: this.checkPassword}
-                  ]
-                }
-              ],
+              rules:[
+                {validator: this.checkPassword}
+              ]
             })(
-              <Input prefix={<Icon type="safety"/>} placeholder="密码" />
+              <Input prefix={<Icon type="safety"/>} type="password" placeholder="密码" />
             )
           }
         </Item>
         <Item>
-          <Button type="primary" className='login-form-button'>登录</Button>
+          <Button type="primary" htmlType="submit" className='login-form-button'>登录</Button>
         </Item>
       </Form>
     )

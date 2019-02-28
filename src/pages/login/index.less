@@ -19,6 +19,7 @@
     }
   }
   .login-form{
+    position: relative;
     display: flex;
     flex-direction:column;
     align-items: center;
@@ -36,6 +37,19 @@
       .login-form-button{
         width: 100%;
       }
+    }
+    .err-meg{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      line-height: 30px;
+      font-size: 18px;
+      background: red;
+      color: #ffffff;
+      text-align: center;
+      transition: .5s height;
     }
   }
 }
